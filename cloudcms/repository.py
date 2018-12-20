@@ -7,14 +7,20 @@ class Repository(CloudCMSObject):
         super(Repository, self).__init__(client, data)
 
         self.platform_id = data['platformId']
-        self.repository_url = client.config.base_url + '/repositories/' + self._doc
+
+    def uri(self):
+        return '/repositories/' + self._doc
 
     def list_branches(self):
-        url = self.repository_url + '/branches/'
-        res = self.client.get(url)
+        uri = self.uri() + '/branches/'
+        res = self.client.get(uri)
         return Branch.branch_map(self, res['rows'])
 
     def read_branch(self, branch_id):
-        url = self.repository_url + '/branches/' + branch_id
-        res = self.client.get(url)
+        uri = self.uri() + '/branches/' + branch_id
+        res = self.client.get(uri)
         return Branch(self, res)
+        
+    @classmethod
+    def repository_map(cls, client, data):
+        return {repository['_doc']: Repository(client, repository) for repository in data}

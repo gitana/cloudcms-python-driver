@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlencode
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
@@ -35,19 +36,32 @@ class CloudCMS:
         return self.get_platform()
 
         
-    def get(self, url, params={}):
-        return self.request('GET', url, params)
+    def get(self, uri, params={}):
+        return self.request('GET', uri, params)
 
-    def post(self, url, params={}, data={}):
-        return self.request('POST', url, params, data)
+    def post(self, uri, params={}, data={}):
+        return self.request('POST', uri, params, data)
 
-    def request(self, method, url, params={}, data={}):
+    def put(self, uri, params={}, data={}):
+        return self.request('PUT', uri, params, data)
+
+    def delete(self, uri, params={}):
+        return self.request('DELETE', uri, params)
+
+    def request(self, method, uri, params={}, data={}):
         # Add "full" to params if not there
         if not 'full' in params:
             params['full'] = True
 
         # Convert param values to json
-        paramsJson = {key: json.dumps(param) for (key, param) in params.items()}        
+        paramsJson = {}
+        for (key, param) in params.items():
+            if isinstance(param, str):
+                paramsJson[key] = param
+            else:
+                paramsJson[key] = json.dumps(param)
+
+        url = self.config.base_url + uri
 
         res = self.oauth_client.request(method, url, json=data, params=paramsJson).json()
         if 'error' in res and res['error']:
@@ -56,5 +70,5 @@ class CloudCMS:
         return res
 
     def get_platform(self):
-        data = self.get(self.config.base_url)
+        data = self.get('')
         return Platform(self, data)

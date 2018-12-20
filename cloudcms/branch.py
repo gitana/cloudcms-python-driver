@@ -6,28 +6,30 @@ class Branch(RepositoryObject):
 
     def __init__(self, repository, data):
         super(Branch, self).__init__(repository, data)
-        self.branch_url = '%s/branches/%s' % (self.repository_url, self._doc) 
+
+    def uri(self):
+        return '%s/branches/%s' % (self.repository.uri(), self._doc) 
 
     def read_node(self, node_id):
-        url = self.branch_url + "/nodes/" + node_id
-        res = self.client.get(url)
+        uri = self.uri() + "/nodes/" + node_id
+        res = self.client.get(uri)
 
-        return Node(self.repository, res)
+        return Node(self, res)
     
     def query_nodes(self, query, pagination={}):
-        url = self.branch_url + "/nodes/query"
+        uri = self.uri() + "/nodes/query"
 
-        res = self.client.post(url, params=pagination, data=query)
-        return Node.node_map(self.repository, res['rows'])
+        res = self.client.post(uri, params=pagination, data=query)
+        return Node.node_map(self, res['rows'])
 
-    def search_nodes(self, search, pagination={}):
-        url = self.branch_url + "/nodes/search"
+    def find_nodes(self, config, pagination={}):
+        uri = self.uri() + "/nodes/find"
 
-        res = self.client.post(url, params=pagination, data=search)
-        return Node.node_map(self.repository, res['rows'])
+        res = self.client.post(uri, params=pagination, data=config)
+        return Node.node_map(self, res['rows'])
 
-    def create_node(self, obj, options):
-        url = self.branch_url + "/nodes"
+    def create_node(self, obj, options={}):
+        uri = self.uri() + "/nodes"
 
         params = {}
         params['rootNodeId'] = options.get('rootNodeId') or 'root'
@@ -45,11 +47,13 @@ class Branch(RepositoryObject):
         elif 'filepath' in options:
             params['filePath'] = options['filepath']
 
-        res = self.client.post(url, params=params, data=obj)
-        print(res)
+        res = self.client.post(uri, params=params, data=obj)
         return res['_doc']
 
+    def delete_nodes(self, nodeIds):
+        uri = self.uri() + '/nodes/delete'
+        return self.client.post(uri, data=nodeIds)
 
     @classmethod
-    def branch_map(repository, data):
+    def branch_map(cls, repository, data):
         return {branch['_doc']: Branch(repository, branch) for branch in data}
