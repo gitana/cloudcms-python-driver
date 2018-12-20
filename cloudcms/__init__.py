@@ -1,1 +1,1 @@
-from cloudcms import *
+from .cloudcms import CloudCMS

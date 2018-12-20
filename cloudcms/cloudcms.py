@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from .connectionConfig import ConnectionConfig
+from .connection_config import ConnectionConfig
 from .platform import Platform
 
 class CloudCMS:
@@ -18,16 +18,9 @@ class CloudCMS:
                 self.config = ConnectionConfig(data)
         else:
             self.config = ConnectionConfig(kwargs)
-
-        def token_updater(token):
-            self.oauth_client.token = token
-
-        self.oauth_client = OAuth2Session(client=LegacyApplicationClient(client_id=self.config.client_id),
-                                auto_refresh_kwargs=self.config.extra(),
-                                auto_refresh_url=self.config.token_url,
-                                token_updater=token_updater)
-
-        self.oauth_client.token = self.oauth_client.fetch_token(token_url=self.config.token_url,
+        
+        session = OAuth2Session(client=LegacyApplicationClient(client_id=self.config.client_id))
+        self.token = session.fetch_token(token_url=self.config.token_url,
                                 username=self.config.username,
                                 password=self.config.password,
                                 client_id=self.config.client_id,
@@ -35,7 +28,9 @@ class CloudCMS:
 
         return self.get_platform()
 
-        
+    def token_updater(self, token):
+            self.token = token
+
     def get(self, uri, params={}):
         return self.request('GET', uri, params)
 
@@ -63,7 +58,13 @@ class CloudCMS:
 
         url = self.config.base_url + uri
 
-        res = self.oauth_client.request(method, url, json=data, params=paramsJson).json()
+        session = OAuth2Session(client=LegacyApplicationClient(client_id=self.config.client_id),
+                                token=self.token,
+                                auto_refresh_kwargs=self.config.extra(),
+                                auto_refresh_url=self.config.token_url,
+                                token_updater=self.token_updater)
+                                
+        res = session.request(method, url, json=data, params=paramsJson).json()
         if 'error' in res and res['error']:
             raise RuntimeError(res['message'])
 
