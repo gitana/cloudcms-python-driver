@@ -14,10 +14,6 @@ To install, run `pip install cloudcms`
 Simple example:
 ```python
 from cloudcms import CloudCMS
-import os
-
-# Needed when using http
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Connect to Cloud CMS
 client = CloudCMS()
