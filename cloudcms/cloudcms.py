@@ -1,5 +1,4 @@
 import json
-from urllib.parse import urlencode
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
@@ -29,7 +28,7 @@ class CloudCMS:
         return self.get_platform()
 
     def token_updater(self, token):
-            self.token = token
+        self.token = token
 
     def get(self, uri, params={}):
         return self.request('GET', uri, params)

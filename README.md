@@ -9,15 +9,20 @@ Currently supports the following functionality:
 - Read platform, branch, and repositories
 - Read, query, search, create, update, and delete nodes
 
-To install, run `pip install cloudcms`
+## Installation
 
-Simple example:
+`pip install cloudcms`
+
+## Examples
+
+Below are some examples of how you might use this driver:
+
 ```python
 from cloudcms import CloudCMS
 
 # Connect to Cloud CMS
 client = CloudCMS()
-platform = client.connect(filename="gitana.json")
+platform = client.connect(filename='gitana.json')
 
 # List repositories
 repositories = platform.list_repositories()
@@ -59,3 +64,16 @@ find = {
 }
 searched_nodes = branch.find_nodes(find)
 ```
+
+## Resources
+
+* Cloud CMS: https://www.cloudcms.com
+* Github: https://github.com/gitana/cloudcms-python-driver
+* Python Driver Download: https://pypi.org/project/cloudcms/
+* Cloud CMS Documentation: https://www.cloudcms.com/documentation.html
+* Developers Guide: https://www.cloudcms.com/developers.html
+
+## Support
+
+For information or questions about the Python Driver, please contact Cloud CMS
+at [support@cloudcms.com](mailto:support@cloudcms.com).
