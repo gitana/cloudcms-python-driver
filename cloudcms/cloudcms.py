@@ -4,6 +4,7 @@ from requests_oauthlib import OAuth2Session
 
 from .connection_config import ConnectionConfig
 from .platform import Platform
+from .request_error import RequestError
 
 class CloudCMS:
 
@@ -65,7 +66,7 @@ class CloudCMS:
                                 
         res = session.request(method, url, json=data, params=paramsJson).json()
         if 'error' in res and res['error']:
-            raise RuntimeError(res['message'])
+            raise RequestError(res)
 
         return res
 

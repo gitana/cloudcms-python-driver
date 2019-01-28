@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cloudcms',
-    version='1.0.1',
+    version='1.0.2',
     author='Michael Whitman',
     author_email='michael.whitman@cloudcms.com',
     description='Cloud CMS Python Driver',
@@ -18,4 +18,9 @@ setuptools.setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent'
     ],
+    install_requires=[
+        'oauthlib>=3.0.0',
+        'requests>=2.0.0',
+        'requests-oauthlib>=1.0.0'
+    ]
 )

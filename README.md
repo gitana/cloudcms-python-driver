@@ -44,7 +44,7 @@ obj = {
     'title': 'Twelfth Night',
     'description': 'An old play'
 }
-nodeId = branch.create_node(obj)
+newNode = branch.create_node(obj)
 
 # Query nodes
 query = {
@@ -63,6 +63,14 @@ find = {
     }
 }
 searched_nodes = branch.find_nodes(find)
+```
+
+## Tests
+
+To perform the unit tests for this driver, run:
+
+```
+python -m unittest tests
 ```
 
 ## Resources

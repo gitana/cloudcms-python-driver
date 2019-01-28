@@ -1,5 +1,6 @@
 from .cloudcms_object import CloudCMSObject
 from .repository import Repository
+from .request_error import RequestError
 
 class Platform(CloudCMSObject):
 
@@ -15,5 +16,18 @@ class Platform(CloudCMSObject):
         return Repository.repository_map(self.client, res['rows'])
 
     def read_repository(self, repository_id):
-        res = self.client.get('/repositories/' + repository_id)
-        return Repository(self.client, res)
+        repository = None
+        try:
+            res = self.client.get('/repositories/' + repository_id)
+            repository = Repository(self.client, res)
+        except RequestError:
+            repository = None
+        
+        return repository
+
+    def create_repository(self, obj={}):
+        uri = self.uri() + '/repositories'
+        res = self.client.post(uri, obj)
+
+        repository_id = res['_doc']        
+        return self.read_repository(repository_id)

@@ -1,3 +1,5 @@
+from .request_error import RequestError
+
 class CloudCMSObject:
     
     def __init__(self, client, data):
@@ -10,7 +12,11 @@ class CloudCMSObject:
         raise NotImplementedError()
 
     def reload(self):
-        self.data = self.client.get(self.uri())
+        try:
+            self.data = self.client.get(self.uri())
+        except RequestError:
+            self.data = None
+            
 
     def delete(self):
         return self.client.delete(self.uri())

@@ -1,5 +1,6 @@
 import json
 from .repository_object import RepositoryObject
+from .request_error import RequestError
 from .node import Node
 
 class Branch(RepositoryObject):
@@ -10,11 +11,19 @@ class Branch(RepositoryObject):
     def uri(self):
         return '%s/branches/%s' % (self.repository.uri(), self._doc) 
 
+    def is_master(self):
+        return self.data['type'] == 'MASTER'
+
     def read_node(self, node_id):
         uri = self.uri() + "/nodes/" + node_id
-        res = self.client.get(uri)
+        node = None
+        try:
+            res = self.client.get(uri)
+            node = Node(self, res)
+        except RequestError:
+            node = None
 
-        return Node(self, res)
+        return node
     
     def query_nodes(self, query, pagination={}):
         uri = self.uri() + "/nodes/query"
@@ -48,11 +57,13 @@ class Branch(RepositoryObject):
             params['filePath'] = options['filepath']
 
         res = self.client.post(uri, params=params, data=obj)
-        return res['_doc']
+        node_id = res['_doc']
 
-    def delete_nodes(self, nodeIds):
+        return self.read_node(node_id)
+
+    def delete_nodes(self, node_ids):
         uri = self.uri() + '/nodes/delete'
-        return self.client.post(uri, data=nodeIds)
+        return self.client.post(uri, data=node_ids)
 
     @classmethod
     def branch_map(cls, repository, data):
