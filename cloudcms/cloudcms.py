@@ -64,7 +64,12 @@ class CloudCMS:
                                 auto_refresh_url=self.config.token_url,
                                 token_updater=self.token_updater)
                                 
-        res = session.request(method, url, json=data, params=paramsJson).json()
+        if method == 'GET' or method == 'DELETE':
+            response = session.request(method, url, params=paramsJson)
+        else:
+            response = session.request(method, url, json=data, params=paramsJson)
+
+        res = response.json()
         if 'error' in res and res['error']:
             raise RequestError(res)
 
