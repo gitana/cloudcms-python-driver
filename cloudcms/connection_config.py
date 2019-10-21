@@ -3,7 +3,7 @@ class ConnectionConfig:
     required_keys = set(['baseURL', 'username', 'password', 'clientKey', 'clientSecret'])
 
     def __init__(self, config):
-        if not (self.required_keys <= config.keys()):
+        if not (self.required_keys.issubset(set(config.keys()))):
             raise ValueError('Invalid Gitana Configuration')
 
         self.username = config['username']

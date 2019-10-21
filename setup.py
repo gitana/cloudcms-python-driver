@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cloudcms',
-    version='1.0.3',
+    version='1.0.4',
     author='Michael Whitman',
     author_email='michael.whitman@cloudcms.com',
     description='Cloud CMS Python Driver',

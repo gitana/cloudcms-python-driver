@@ -1,6 +1,6 @@
 from .request_error import RequestError
 
-class CloudCMSObject:
+class CloudCMSObject(object):
     
     def __init__(self, client, data):
         self.client = client
