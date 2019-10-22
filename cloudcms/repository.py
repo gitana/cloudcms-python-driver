@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from .cloudcms_object import CloudCMSObject
 from .branch import Branch
 from .request_error import RequestError
@@ -39,4 +40,4 @@ class Repository(CloudCMSObject):
         
     @classmethod
     def repository_map(cls, client, data):
-        return {repository['_doc']: Repository(client, repository) for repository in data}
+        return OrderedDict((repository['_doc'], Repository(client, repository)) for repository in data)

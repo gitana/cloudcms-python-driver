@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cloudcms',
-    version='1.0.4',
+    version='1.0.5',
     author='Michael Whitman',
     author_email='michael.whitman@cloudcms.com',
     description='Cloud CMS Python Driver',
@@ -14,7 +14,7 @@ setuptools.setup(
     url='https://github.com/gitana/cloudcms-python-driver',
     packages=setuptools.find_packages(),
     classifiers=[
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent'
     ],

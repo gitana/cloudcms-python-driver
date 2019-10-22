@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from .repository_object import RepositoryObject
 
 class Node(RepositoryObject):
@@ -13,4 +14,4 @@ class Node(RepositoryObject):
 
     @classmethod
     def node_map(cls, repository, data):
-        return {node['_doc']: Node(repository, node) for node in data}
+        return OrderedDict((node['_doc'], Node(repository, node)) for node in data)

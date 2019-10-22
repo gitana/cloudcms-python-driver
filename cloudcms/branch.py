@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from .repository_object import RepositoryObject
 from .request_error import RequestError
 from .node import Node
@@ -67,4 +68,4 @@ class Branch(RepositoryObject):
 
     @classmethod
     def branch_map(cls, repository, data):
-        return {branch['_doc']: Branch(repository, branch) for branch in data}
+        return OrderedDict((branch['_doc'], Branch(repository, branch)) for branch in data)
