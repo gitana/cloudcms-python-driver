@@ -31,11 +31,15 @@ class CloudCMS:
     def token_updater(self, token):
         self.token = token
 
-    def get(self, uri, params={}):
-        return self.request('GET', uri, params)
+    def get(self, uri, params={}, output_json=True):
+        return self.request('GET', uri, params, output_json=output_json)
 
     def post(self, uri, params={}, data={}):
         return self.request('POST', uri, params, data)
+
+    def upload(self, uri, name, file, mimetype, params={}):
+        files = { 'upload_file': (name, file, mimetype) }
+        return self.request('POST', uri, params, files=files)
 
     def put(self, uri, params={}, data={}):
         return self.request('PUT', uri, params, data)
@@ -43,7 +47,7 @@ class CloudCMS:
     def delete(self, uri, params={}):
         return self.request('DELETE', uri, params)
 
-    def request(self, method, uri, params={}, data={}):
+    def request(self, method, uri, params={}, data={}, headers={}, output_json=True, **kwargs):
         # Add "full" to params if not there
         if not 'full' in params:
             params['full'] = True
@@ -54,7 +58,7 @@ class CloudCMS:
             if isinstance(param, str):
                 paramsJson[key] = param
             else:
-                paramsJson[key] = json.dumps(param)
+                paramsJson[key] = json.dumps(param) 
 
         url = self.config.base_url + uri
 
@@ -65,13 +69,17 @@ class CloudCMS:
                                 token_updater=self.token_updater)
                                 
         if method == 'GET' or method == 'DELETE':
-            response = session.request(method, url, params=paramsJson)
+            response = session.request(method, url, params=paramsJson, headers=headers, **kwargs)
         else:
-            response = session.request(method, url, json=data, params=paramsJson)
+            response = session.request(method, url, json=data, params=paramsJson, headers=headers, **kwargs)
 
-        res = response.json()
-        if 'error' in res and res['error']:
-            raise RequestError(res)
+        if output_json:
+            res = response.json()
+            if 'error' in res and res['error']:
+                raise RequestError(res)
+        else:
+            res = response.content
+
 
         return res
 
