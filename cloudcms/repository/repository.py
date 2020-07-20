@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from .cloudcms_object import CloudCMSObject
-from .branch import Branch
-from .request_error import RequestError
+from ..platform import CloudCMSObject
+from ..branch import Branch
+from ..error import RequestError
 
 
 class Repository(CloudCMSObject):

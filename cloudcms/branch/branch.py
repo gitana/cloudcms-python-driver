@@ -1,8 +1,8 @@
 import json
 from collections import OrderedDict
-from .repository_object import RepositoryObject
-from .request_error import RequestError
-from .node import Node
+from ..repository.repository_object import RepositoryObject
+from ..error import RequestError
+from ..node.base_node import BaseNode
 
 class Branch(RepositoryObject):
 
@@ -14,13 +14,16 @@ class Branch(RepositoryObject):
 
     def is_master(self):
         return self.data['type'] == 'MASTER'
+    
+    def root_node(self):
+        return self.read_node('root')
 
     def read_node(self, node_id):
         uri = self.uri() + "/nodes/" + node_id
         node = None
         try:
             res = self.client.get(uri)
-            node = Node(self, res)
+            node = BaseNode.build_node(self, res)
         except RequestError:
             node = None
 
@@ -30,15 +33,23 @@ class Branch(RepositoryObject):
         uri = self.uri() + "/nodes/query"
 
         res = self.client.post(uri, params=pagination, data=query)
-        return Node.node_map(self, res['rows'])
+        return BaseNode.node_map(self, res['rows'])
+
+    def search_nodes(self, text, pagination={}):
+        uri = self.uri() + '/nodes/search'
+        params = pagination
+        params['text'] = text
+
+        res = self.client.get(uri, params)
+        return BaseNode.node_map(self, res['rows'])
 
     def find_nodes(self, config, pagination={}):
         uri = self.uri() + "/nodes/find"
 
         res = self.client.post(uri, params=pagination, data=config)
-        return Node.node_map(self, res['rows'])
+        return BaseNode.node_map(self, res['rows'])
 
-    def create_node(self, obj, options={}):
+    def create_node(self, obj={}, options={}):
         uri = self.uri() + "/nodes"
 
         params = {}

@@ -2,9 +2,9 @@ import json
 from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from .connection_config import ConnectionConfig
+from .support import ConnectionConfig
 from .platform import Platform
-from .request_error import RequestError
+from .error import RequestError
 
 class CloudCMS:
 

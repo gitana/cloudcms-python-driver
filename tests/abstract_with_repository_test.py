@@ -6,7 +6,7 @@ class AbstractWithRepositoryTest(AbstractTest):
     @classmethod
     def setUpClass(cls):
         super(AbstractWithRepositoryTest, cls).setUpClass()
-        cls.repository = cls.platform.create_repository()
+        cls.repository = cls.platform.create_repository(obj={'title': 'Python Driver Test'})
 
     @classmethod
     def tearDownClass(cls):

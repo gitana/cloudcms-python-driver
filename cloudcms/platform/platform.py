@@ -1,6 +1,6 @@
-from .cloudcms_object import CloudCMSObject
-from .repository import Repository
-from .request_error import RequestError
+from . import CloudCMSObject
+from ..repository import Repository
+from ..error import RequestError
 
 class Platform(CloudCMSObject):
 

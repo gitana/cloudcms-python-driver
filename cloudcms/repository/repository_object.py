@@ -1,4 +1,4 @@
-from .cloudcms_object import CloudCMSObject
+from ..platform import CloudCMSObject
 
 class RepositoryObject(CloudCMSObject):
 

@@ -1,6 +1,8 @@
 import time
 from .abstract_with_repository_test import AbstractWithRepositoryTest
 from cloudcms.node import Node
+from cloudcms.support import QName
+from cloudcms.association import Directionality
 
 class TestNode(AbstractWithRepositoryTest):
     
@@ -8,6 +10,17 @@ class TestNode(AbstractWithRepositoryTest):
     def setUpClass(cls):
         super(TestNode, cls).setUpClass()
         cls.branch = cls.repository.read_branch("master")
+
+    def create_file(self, branch, parent, filename, is_folder):
+        node = branch.create_node({'title': filename})
+        node.add_feature('f:filename', {'filename': filename})
+        if is_folder:
+            node.add_feature('f:container', {})
+        
+        parent.associate(node, QName.create(qname='a:child'), Directionality.DIRECTED)
+
+        return node
+
 
     def test_node_crud(self):
         branch = type(self).branch
@@ -31,7 +44,7 @@ class TestNode(AbstractWithRepositoryTest):
         self.assertIsNone(nodeRead)
 
 
-    def test_node_query_and_find(self):
+    def test_node_query_search_find(self):
         branch = type(self).branch
 
         nodeObj1 = {
@@ -57,7 +70,7 @@ class TestNode(AbstractWithRepositoryTest):
         node4 = branch.create_node(nodeObj4)
 
         # Wait for nodes to index
-        time.sleep(5)
+        time.sleep(10)
 
         query = {
             "meal": "lunch"
@@ -76,7 +89,53 @@ class TestNode(AbstractWithRepositoryTest):
         self.assertTrue(node1._doc in findNodes.keys())
         self.assertTrue(node2._doc in findNodes.keys())
 
+        searchNodes = branch.search_nodes('burger')
+        self.assertEqual(2, len(searchNodes))
+        self.assertTrue(node1._doc in searchNodes.keys())
+        self.assertTrue(node2._doc in searchNodes.keys())
+
         node1.delete()
         node2.delete()
         node3.delete()
         node4.delete()
+
+    def test_features(self):
+        branch = type(self).branch
+        node = branch.create_node({})
+        featureIds = node.get_feature_ids()
+        self.assertTrue(len(featureIds) > 0)
+
+        node.add_feature('f:filename', {'filename': 'file1'})
+        featureIds = node.get_feature_ids()
+        self.assertTrue('f:filename' in featureIds)
+        self.assertTrue(node.has_feature('f:filename'))
+        featureObj = node.get_feature('f:filename')
+        self.assertEqual('file1', featureObj.get('filename'))
+
+        node.remove_feature('f:filename')
+        featureIds = node.get_feature_ids()
+        self.assertFalse('f:filename' in featureIds)
+        self.assertFalse(node.has_feature('f:filename'))
+        self.assertIsNone(node.get_feature('f:filename'))
+
+        node.delete()
+
+    def test_translations(self):
+        branch = type(self).branch
+        rootNode = branch.root_node()
+        
+        node = self.create_file(branch, rootNode, 'theNode', False)
+        german = node.create_translation('de_DE', '1.0', {'title': 'german node'})
+        self.assertIsNotNone(german)
+        
+        spanish1 = node.create_translation('es_ES', '1.0', {'title': 'spanish node'})
+        spanish2 = node.create_translation('es_ES', '2.0', {'title': 'spanish node 2'})
+
+        editions = node.get_translation_editions()
+        self.assertEqual(2, len(editions))
+
+        locales = node.get_translation_locales('1.0')
+        self.assertEqual(2, len(locales))
+
+        translation = node.read_translation('es_MX', edition='2.0')
+        self.assertEqual('spanish node 2', translation.get_string('title'))
