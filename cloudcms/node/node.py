@@ -28,7 +28,7 @@ class Node(BaseNode):
         if directionality is not Directionality.DIRECTED:
             params['directionality'] = str(directionality)
 
-        response1 = self.client.post(uri, params)
+        response1 = self.client.post(uri, params, data)
         association_id = response1['_doc']
 
         # Read back assocation object

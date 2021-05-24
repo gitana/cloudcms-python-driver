@@ -16,7 +16,7 @@ class TestTraverse(AbstractWithRepositoryTest):
         if is_folder:
             node.add_feature('f:container', {})
         
-        parent.associate(node, QName.create(qname='a:child'), Directionality.DIRECTED)
+        parent.associate(node, QName.create(qname='a:child'), directionality=Directionality.DIRECTED)
 
         return node
 

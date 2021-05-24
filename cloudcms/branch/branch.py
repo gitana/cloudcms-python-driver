@@ -77,6 +77,24 @@ class Branch(RepositoryObject):
         uri = self.uri() + '/nodes/delete'
         return self.client.post(uri, data=node_ids)
 
+    def graphql_query(self, query, operation_name=None, variables={}):
+        uri = self.uri() + "/graphql"
+        
+        params = {}
+        params['query'] = query
+
+        if variables is not None:
+            params['variables'] = variables
+        
+        if operation_name is not None:
+            params['operation_name'] = operation_name
+
+        return self.client.get(uri, params)
+
+    def graphql_schema(self):
+        uri = self.uri() + "/graphql/schema"
+        return self.client.request("GET", uri, output_json=False)
+
     @classmethod
     def branch_map(cls, repository, data):
         return OrderedDict((branch['_doc'], Branch(repository, branch)) for branch in data)
