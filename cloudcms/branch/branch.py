@@ -18,6 +18,16 @@ class Branch(RepositoryObject):
     def root_node(self):
         return self.read_node('root')
 
+    def reset(self, changeset_id):
+        uri = self.uri() + '/reset/start'
+        params = {
+            'id': changeset_id
+        }
+
+        res = self.client.post(uri, params, {})
+        return res['_doc']
+
+
     def read_node(self, node_id):
         uri = self.uri() + "/nodes/" + node_id
         node = None
