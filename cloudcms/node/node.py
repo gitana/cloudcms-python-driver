@@ -8,6 +8,7 @@ class Node(BaseNode):
     def __init__(self, branch, data):
         super(Node, self).__init__(branch, data)
 
+    # Associations
     def associations(self, pagination={}, direction=Direction.ANY, association_type_qname=None):
         uri = self.uri() + '/associations'
         params = {}
@@ -107,6 +108,21 @@ class Node(BaseNode):
         results = TraversalResults.parse(response, self.branch)
         return results
     
+    # Paths
+    def resolvePath(self):
+        uri = self.uri() + '/path'
+        params = { 'rootNodeId': 'r:root' }
+
+        response = self.client.get(uri, params)
+        return response.path
+
+    def resolvePaths(self):
+        uri = self.uri() + '/paths'
+        response = self.client.get(uri, {})
+
+        return response.paths
+
+    # Translations
     def create_translation(self, locale, edition, obj):
         uri = self.uri() + '/i18n'
         params = {

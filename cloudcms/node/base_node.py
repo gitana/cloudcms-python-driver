@@ -59,6 +59,29 @@ class BaseNode(RepositoryObject):
         self.client.delete(uri)
         self.reload()
 
+    # Versions
+    def read_version(self, changesetId, options={}):
+        uri = self.uri() + '/versions/' + changesetId
+
+        response = self.client.get(uri, options)
+        return BaseNode.build_node(self.branch, response)
+
+    def list_versions(self, options={}, pagination={}):
+        uri = self.uri() + '/versions'
+
+        params = {
+            *options,
+            *pagination
+        }
+        response = self.client.get(uri, params)
+        return BaseNode.node_map(self.branch, response['rows'])
+
+    def restore_version(self, changesetId):
+        uri = self.uri() + '/versions/' + changesetId + '/restore'
+        response = self.client.post(uri, {}, {})
+
+        return BaseNode.build_node(self.branch, response)
+
     @classmethod
     def node_map (cls, branch, data):
         return OrderedDict((node['_doc'], cls.build_node(branch, node)) for node in data)
