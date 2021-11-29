@@ -17,6 +17,16 @@ class BaseNode(RepositoryObject):
         uri = self.uri() + '/refresh'
         return self.client.post(uri)
 
+    def change_node_qname(self, new_qname):
+        uri = self.uri() + '/change_qname'
+        params = {
+            'qname': new_qname
+        }
+
+        return self.client.post(uri, params, {})
+
+    # Attachments
+
     def download_attachment(self, attachment_id='default'):
         uri = self.uri() + '/attachments/' + attachment_id
 
@@ -36,6 +46,8 @@ class BaseNode(RepositoryObject):
         uri = self.uri() + '/attachments'
         response = self.client.get(uri)
         return Attachment.attachments_map(self, response['rows'])
+
+    # Features
 
     def get_feature_ids(self):
         features_obj = self.data['_features']
@@ -60,6 +72,7 @@ class BaseNode(RepositoryObject):
         self.reload()
 
     # Versions
+
     def read_version(self, changesetId, options={}):
         uri = self.uri() + '/versions/' + changesetId
 
