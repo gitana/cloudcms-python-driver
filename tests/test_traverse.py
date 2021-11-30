@@ -39,6 +39,13 @@ class TestTraverse(AbstractWithRepositoryTest):
         file4 = self.create_file(branch, folder1, 'file4', False)
         file5 = self.create_file(branch, folder2, 'file5', False)
 
+        # test path resolves
+        path = file5.resolve_path()
+        self.assertEqual('/folder1/folder2/file5', path)
+
+        paths = file5.resolve_paths()
+        self.assertGreater(0, len(paths))
+
         traverse = {
             'depth': 1,
             'filter': 'ALL_BUT_START_NODE',

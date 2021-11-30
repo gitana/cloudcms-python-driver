@@ -11,6 +11,9 @@ class TestBranch(AbstractWithRepositoryTest):
         for branch in branches.values():
             self.assertIsInstance(branch, Branch)
 
+        queried_branches = repository.query_branches({})
+        self.assertTrue(len(queried_branches) > 0)
+
         master = repository.read_branch('master')
         self.assertEqual('/repositories/' + repository._doc + '/branches/' + branch._doc, branch.uri())
         self.assertTrue(master.is_master())

@@ -83,11 +83,12 @@ class BaseNode(RepositoryObject):
         uri = self.uri() + '/versions'
 
         params = {
-            *options,
-            *pagination
+            **options,
+            **pagination
         }
+
         response = self.client.get(uri, params)
-        return BaseNode.node_map(self.branch, response['rows'])
+        return BaseNode.version_map(self.branch, response['rows'])
 
     def restore_version(self, changesetId):
         uri = self.uri() + '/versions/' + changesetId + '/restore'
@@ -98,6 +99,10 @@ class BaseNode(RepositoryObject):
     @classmethod
     def node_map (cls, branch, data):
         return OrderedDict((node['_doc'], cls.build_node(branch, node)) for node in data)
+
+    @classmethod
+    def version_map (cls, branch, data):
+        return OrderedDict((node['_changesetId'], cls.build_node(branch, node)) for node in data)
 
     @classmethod
     def build_node (cls, branch, data, force_association=False):

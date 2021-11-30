@@ -55,8 +55,8 @@ class Repository(CloudCMSObject):
         res = self.client.get(uri, {})
         return Release.release_map(self, res['rows'])
 
-    def query_releases(self, query, pagination):
-        uri = self.uri() + '/releases/'
+    def query_releases(self, query, pagination={}):
+        uri = self.uri() + '/releases/query'
         res = self.client.post(uri, pagination, query)
         return Release.release_map(self, res['rows'])
 
@@ -71,7 +71,7 @@ class Repository(CloudCMSObject):
 
         return release
 
-    def start_create_release(self, object, source_release_id=None):
+    def start_create_release(self, object={}, source_release_id=None):
         uri = self.uri() + '/releases/create/start'
         params = {}
         if source_release_id:

@@ -52,6 +52,9 @@ class CloudCMS:
         if not 'full' in params:
             params['full'] = True
 
+        if not 'metadata' in params:
+            params['metadata'] = True
+
         # Convert param values to json
         paramsJson = {}
         for (key, param) in params.items():

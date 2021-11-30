@@ -139,3 +139,44 @@ class TestNode(AbstractWithRepositoryTest):
 
         translation = node.read_translation('es_MX', edition='2.0')
         self.assertEqual('spanish node 2', translation.get_string('title'))
+
+    def test_change_qname(self):
+        branch = type(self).branch
+
+        nodeObj = {
+            '_type': 'n:node',
+            'title': 'Test node'
+        }
+
+        node = branch.create_node(nodeObj)
+
+        node.change_node_qname('o:blah')
+        node.reload()
+
+        self.assertEqual('o:blah', node.data['_qname'])
+        
+
+    def test_versions(self):
+        branch = type(self).branch
+        nodeObj = {
+            'title': 'my node'
+        }
+
+        node = branch.create_node(nodeObj)
+        firstChangeset = node.data['_system']['changeset']
+        self.assertIsNotNone(firstChangeset)
+
+        node.data['title'] = 'new stuff'
+        node.update()
+        node.reload()
+        self.assertEqual('new stuff', node.data['title'])
+
+        versions = node.list_versions()
+        self.assertEqual(2, len(versions))
+
+        firstVersion = node.read_version(firstChangeset)
+        self.assertEqual('my node', firstVersion.data['title'])
+
+
+        restoredVersion = node.restore_version(firstChangeset)
+        self.assertEqual('my node', restoredVersion.data['title'])

@@ -1,5 +1,6 @@
 from .abstract_test import AbstractTest
 from cloudcms.repository import Repository
+from cloudcms.error import RequestError
 
 class TestRepository(AbstractTest):
     
@@ -19,8 +20,12 @@ class TestRepository(AbstractTest):
         self.assertEqual(repository.data, repositoryRead.data)
 
         repository.delete()
-        repositoryRead = platform.read_repository(repository._doc)
-        self.assertIsNone(repositoryRead)
+        ex = False
+        repositoryRead = None
+        try:
+            repositoryRead = platform.read_repository(repository._doc)
+        except RequestError:
+            ex = True
 
-        repository = platform.read_repository('I am not real')
-        self.assertIsNone(repository)     
+        self.assertTrue(ex)
+        self.assertIsNone(repositoryRead)

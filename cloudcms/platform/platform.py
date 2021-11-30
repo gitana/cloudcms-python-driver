@@ -1,5 +1,7 @@
 from . import CloudCMSObject
 from ..repository import Repository
+from ..project import Project
+from ..job import Job
 from ..error import JobError
 
 import time
@@ -18,12 +20,8 @@ class Platform(CloudCMSObject):
         return Repository.repository_map(self.client, res['rows'])
 
     def read_repository(self, repository_id):
-        repository = None
-        try:
-            res = self.client.get('/repositories/' + repository_id)
-            repository = Repository(self.client, res)
-        except RequestError:
-            repository = None
+        res = self.client.get('/repositories/' + repository_id)
+        repository = Repository(self.client, res)
         
         return repository
 
@@ -36,28 +34,32 @@ class Platform(CloudCMSObject):
 
     # Projects
     def read_project(self, projectId):
-        uri = self.uri() + '/projects' + projectId
-        return self.client.get(uri, {})
+        uri = self.uri() + '/projects/' + projectId
+        res = self.client.get(uri, {})
+        return Project(self.client, res)
 
-    def startCreateProject(self, obj):
+    def start_create_project(self, obj):
         uri = self.uri() + '/projects/start'
         response = self.client.post(uri, {}, obj)
 
-        return response._doc
+        return response['_doc']
 
 
     # Jobs
     def read_job(self, jobId):
         uri = self.uri() + '/jobs/' + jobId
-        return self.client.get(uri, {})
+        res = self.client.get(uri, {})
+        return Job(self.client, res)
     
     def query_jobs(self, query, pagination):
         uri = self.uri() + '/jobs/query'
-        return self.client.post(uri, pagination, query)
+        res = self.client.post(uri, pagination, query)
+        return Job.job_map(self.client, res['rows'])
 
     def kill_job(self, jobId):
         uri = self.uri() + '/jobs/' + jobId + '/kill'
-        return self.client.post(uri, {}, {})
+        res = self.client.post(uri, {}, {})
+        return Job(self.client, res)
 
     def wait_for_job_completion(self, jobId):
         
@@ -65,9 +67,9 @@ class Platform(CloudCMSObject):
         while True:
             job = self.read_job(jobId)
             
-            if job.state == 'FINISHED':
+            if job.data['state'] == 'FINISHED':
                 return job
-            elif job.state == 'ERROR':
+            elif job.data['state'] == 'ERROR':
                 raise JobError(jobId)
             else:
                 time.sleep(1)

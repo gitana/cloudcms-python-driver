@@ -109,14 +109,14 @@ class Node(BaseNode):
         return results
     
     # Paths
-    def resolvePath(self):
+    def resolve_path(self):
         uri = self.uri() + '/path'
         params = { 'rootNodeId': 'r:root' }
 
         response = self.client.get(uri, params)
         return response.path
 
-    def resolvePaths(self):
+    def resolve_paths(self):
         uri = self.uri() + '/paths'
         response = self.client.get(uri, {})
 
