@@ -44,7 +44,7 @@ class TestTraverse(AbstractWithRepositoryTest):
         self.assertEqual('/folder1/folder2/file5', path)
 
         paths = file5.resolve_paths()
-        self.assertGreater(0, len(paths))
+        self.assertGreater(len(paths), 0)
 
         traverse = {
             'depth': 1,

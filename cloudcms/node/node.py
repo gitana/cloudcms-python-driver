@@ -111,16 +111,16 @@ class Node(BaseNode):
     # Paths
     def resolve_path(self):
         uri = self.uri() + '/path'
-        params = { 'rootNodeId': 'r:root' }
+        params = {}
 
         response = self.client.get(uri, params)
-        return response.path
+        return response['path']
 
     def resolve_paths(self):
         uri = self.uri() + '/paths'
         response = self.client.get(uri, {})
 
-        return response.paths
+        return response['paths']
 
     # Translations
     def create_translation(self, locale, edition, obj):
