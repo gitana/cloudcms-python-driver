@@ -1,8 +1,9 @@
+from cloudcms.deployment.deployment_target import DeploymentTarget
 from . import CloudCMSObject
 from ..repository import Repository
 from ..project import Project
 from ..job import Job
-from ..error import JobError
+from ..error import JobError, RequestError
 
 import time
 
@@ -60,6 +61,36 @@ class Platform(CloudCMSObject):
         uri = self.uri() + '/jobs/' + jobId + '/kill'
         res = self.client.post(uri, {}, {})
         return Job(self.client, res)
+    
+    # Deployment 
+
+    # Targets
+    def list_deployment_targets(self, pagination={}):
+        uri = self.uri() + '/deployment/targets'
+        res = self.client.get(uri, pagination)
+        return DeploymentTarget.deployment_target_map(self.client, res['rows'])
+
+    def query_deployment_targets(self, query, pagination={}):
+        uri = self.uri() + '/deployment/targets/query'
+        res = self.client.post(uri, pagination, query)
+        return DeploymentTarget.deployment_target_map(self.client, res['rows'])
+    
+    def read_deployment_target(self, id):
+        uri = self.uri() + '/deployment/targets/' + id
+        try:
+            res = self.client.get(uri)
+            target = DeploymentTarget(self.client, res)
+        except RequestError:
+            target = None
+
+        return target 
+    
+    def create_deployment_target(self, obj):
+        uri = self.uri() + '/deployment/targets/'
+        res = self.client.post(uri, data=obj)
+        targetId = res['_doc']
+
+        return targetId
 
     def wait_for_job_completion(self, jobId):
         
