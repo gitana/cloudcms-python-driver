@@ -1,6 +1,6 @@
 # Cloud CMS Python Driver
 
-Basic driver for the [Cloud CMS](https://www.cloudcms.com) API
+Basic driver for the [Cloud CMS](https://gitana.io) API
 
 Runs with Python 3
 
